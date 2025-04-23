@@ -1,5 +1,6 @@
-# Vault password
+# Vault files
 .vault_pass
+vault.yml
 
 # Inventory
 inventory.yml

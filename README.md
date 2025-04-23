@@ -13,8 +13,8 @@ This project automates the process of updating Linux servers and OpenWRT routers
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-repo/update-home-ansible.git
-cd update-home-ansible
+git clone https://github.com/your-repo/automate-home-ansible.git # Fixed repository name
+cd automate-home-ansible
 ```
 
 ### 2. Create the `vault.yml` File
