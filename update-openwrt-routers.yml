@@ -1,0 +1,16 @@
+---
+- name: Update OpenWRT Routers
+  hosts: openwrt_routers
+  become: yes
+  gather_facts: yes
+  serial: 25%
+  max_fail_percentage: 10
+  vars_files:
+    - vault.yml
+
+  tasks:
+    - name: Update package list
+      ansible.builtin.command: opkg update
+
+    - name: Upgrade packages
+      ansible.builtin.shell: opkg list-upgradable | cut -f 1 -d ' ' | xargs -r opkg upgrade

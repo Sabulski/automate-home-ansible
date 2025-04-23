@@ -1,0 +1,60 @@
+---
+- name: Update Linux Servers
+  hosts: home_debian_servers
+  become: yes
+  gather_facts: yes
+  serial: 25%
+  max_fail_percentage: 10
+  vars_files:
+    - vault.yml
+
+  tasks:
+    - name: Update package cache and upgrade packages (Debian/Ubuntu)
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: dist
+      when: ansible_os_family == "Debian"
+
+    - name: Update packages (RedHat/CentOS)
+      ansible.builtin.yum:
+        name: "*"
+        state: latest
+      when: ansible_os_family == "RedHat"
+
+    - name: Update packages (openSUSE)
+      ansible.builtin.zypper:
+        name: "*"
+        state: latest
+      when: ansible_os_family == "Suse"
+
+    - name: Update packages (Arch)
+      ansible.builtin.pacman:
+        update_cache: yes
+        upgrade: yes
+      when: ansible_os_family == "Archlinux"
+
+    - name: Check if reboot is required (Debian/Ubuntu)
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+        get_checksum: no
+      register: reboot_required_file
+      when: ansible_os_family == "Debian"
+
+    - name: Check if reboot is required (RedHat/CentOS)
+      ansible.builtin.command: needs-restarting -r
+      register: reboot_required_cmd
+      ignore_errors: yes
+      changed_when: reboot_required_cmd.rc == 1
+      when: ansible_os_family == "RedHat"
+
+    - name: Reboot the server if required (Debian/Ubuntu)
+      ansible.builtin.reboot:
+      when:
+        - ansible_os_family == "Debian"
+        - reboot_required_file.stat.exists
+
+    - name: Reboot the server if required (RedHat/CentOS)
+      ansible.builtin.reboot:
+      when:
+        - ansible_os_family == "RedHat"
+        - reboot_required_cmd.rc == 1
