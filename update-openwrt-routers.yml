@@ -5,6 +5,7 @@
   gather_facts: yes
   serial: 25%
   max_fail_percentage: 10
+  ignore_unreachable: yes
   vars_files:
     - vault.yml
 
